@@ -1,4 +1,4 @@
-#N-puzzle help
+# N-puzzle help
 
 usage: main.py [-h] [-d]
                [-f {hamming,manhattan,conflicts,Euclidean_distance,out_of_row_and_column}]
