@@ -136,7 +136,7 @@ if __name__ == "__main__":
             else:
                 nb_open, level = cur.ft_astar(size, start, goal, args.f, 2) 
         end_time = time.time() - start_time
-   #     ft_clear()
+        ft_clear()
         ft_save_history(start, goal, size, level, end_time, args)
         cur.ft_display(nb_open, level, args, goal, start, end_time)
     else:
