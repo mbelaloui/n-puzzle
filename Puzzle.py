@@ -1,5 +1,13 @@
+import sys
 from Node import *
 import heapq
+
+def ft_atoi(string):
+    res = 0
+    for i in xrange(len(string)):
+        res = res * 10 + (ord(string[i]) - ord('0'))
+    return res
+
 
 class Ft_colors:
     PURPLE = '\x1b[94m'
@@ -181,3 +189,77 @@ class Puzzle:
                 del self.tmp_opened[self.open[0].lst_hash]
                 del self.open[0]
         return min, nb_open
+
+    # Goal in snail
+    def ft_spiralPrint(self, n):
+        k, l = 0, 0
+        m, h = n, n
+        size, d = 1, n ** 2
+        tab = [[0 for i in range(n)] for j in range(n)]
+
+        while (k < m and l < n):
+            for i in range(l, n):
+                tab[k][i] = size % d
+                size += 1
+
+            k += 1
+            for i in range(k, m):
+                tab[i][n - 1] = size % d
+                size += 1
+
+            n -= 1
+            if (k < m):
+
+                for i in range(n - 1, (l - 1), -1):
+                    tab[m - 1][i] = size % d
+                    size += 1
+                m -= 1
+
+            if (l < n):
+                for i in range(m - 1, k - 1, -1):
+                    tab[i][l] = size % d
+                    size += 1
+                l += 1
+        goal = [tab[i][j] for i in range(h) for j in range(h)]
+        return goal
+
+    # Goal: zero_last
+    def ft_zero_last(self, size):
+        goal = [i + 1 for i in range(0, (size ** 2) - 1)]
+        goal.append(0)
+        return goal
+
+    # Goal : zero_first
+    def ft_zero_first(self, size):
+        goal = [i for i in range(0, size ** 2)]
+        return goal
+
+    # generate a puzzle from a str 
+    def generate_Puzzle(self, lst_str, size):
+        i = 0
+        lst = []
+        size = size ** 2
+        while i < size:
+            lst.append(ft_atoi(lst_str[i]))
+            i += 1
+        return lst
+
+    # determine if the puzzle is solvent or not before applying algorithm
+    def ft_solvable(self, start, goal, size):
+        xstart, ystart = start.index(0) % size, start.index(0) / size
+        # array goal
+        xgoal, ygoal = goal.index(0) % size, goal.index(0) / size
+        # moves
+        dep = abs(ystart - ygoal) + abs(xstart - xgoal)
+        # calcul nb inverstion
+        nb = 0
+        i = 0
+        size = size ** 2
+        while i < size:
+            nb = nb + len(list(set(start[i:]) - set(goal[goal.index(start[i]):])))
+            i += 1
+
+        sol = False
+        if (nb % 2 == 0 and dep % 2 == 0) or (nb % 2 != 0 and dep % 2 != 0):
+            sol = True
+        return sol

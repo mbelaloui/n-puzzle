@@ -1,122 +1,46 @@
 #!/usr/bin/env python
 
-import sys
+from os import system, name
 import re
 import time
 import argparse
 from Node import *
 from Puzzle import *
-from os import system, name
 
-
-
-
-# Goal in snail
-def ft_spiralPrint(n):
-    k, l = 0, 0
-    m, h = n, n
-    size, d = 1, n ** 2
-    tab = [[0 for i in range(n)] for j in range(n)]
-
-    while (k < m and l < n):
-        for i in range(l, n):
-            tab[k][i] = size % d
-            size += 1
-
-        k += 1
-        for i in range(k, m):
-            tab[i][n - 1] = size % d
-            size += 1
-
-        n -= 1
-        if (k < m):
-
-            for i in range(n - 1, (l - 1), -1):
-                tab[m - 1][i] = size % d
-                size += 1
-            m -= 1
-
-        if (l < n):
-            for i in range(m - 1, k - 1, -1):
-                tab[i][l] = size % d
-                size += 1
-            l += 1
-
-    goal = [tab[i][j] for i in range(h) for j in range(h)]
-
-    return goal
-
-# Goal: zero_last
-def ft_zero_last(size):
-    goal = [i + 1 for i in range(0, (size ** 2) - 1)]
-    goal.append(0)
-    return goal
-
-# Goal : zero_first
-def ft_zero_first(size):
-    goal = [i for i in range(0, size ** 2)]
-    return goal
-
-def ft_atoi(string):
-    res = 0
-    for i in xrange(len(string)):
-        res = res * 10 + (ord(string[i]) - ord('0'))
-    return res
-
-# generate a puzzle from a str 
-def generate_Puzzle(lst_str, size):
-    i = 0
-    lst = []
-    size = size ** 2
-    while i < size:
-        lst.append(ft_atoi(lst_str[i]))
-        i += 1
-    return lst
-
-# determine if the puzzle is solvent or not before applying algorithm
-def ft_solvable(start, goal, size):
-    xstart, ystart = start.index(0) % size, start.index(0) / size
-    # array goal
-    xgoal, ygoal = goal.index(0) % size, goal.index(0) / size
-    # moves
-    dep = abs(ystart - ygoal) + abs(xstart - xgoal)
-    # calcul nb inverstion
-    nb = 0
-    i = 0
-    size = size ** 2
-    while i < size:
-        nb = nb + len(list(set(start[i:]) - set(goal[goal.index(start[i]):])))
-        i += 1
-
-    sol = 0
-    if (nb % 2 == 0 and dep % 2 == 0) or (nb % 2 != 0 and dep % 2 != 0):
-        sol = 1
-    return sol
 
 # save history of statistics in the file 'N-Puzzle_statistics' 
-def ft_save_history(start, goal, size, nb_open, end_time):
-    with open('N-Puzzle_statistics', 'ab') as f:
-        f.write(str(size) + ';' + str(goal) + ';' + str(start) + ';' + str(Node.count) + ';' + str(nb_open) + ';' + str(end_time) + '\n')
+def ft_save_history(start, goal, size, nb_open, end_time, args):
+    with open('N-Puzzle_statistics', 'a') as f:
+        if args.g :
+            format_search = "Greedy search"
+        elif args.u :
+            format_search = "Uniform-cost search"
+        elif args.ida :
+            format_search = "IDA-star search"
+        else :# !args.g and !args.h and !args.ida :
+            format_search = "A-star search"
+        f.write(str(size) + ';' + str(goal) + ';' + str(start) + ';' + str(Node.count) + ';' + str(nb_open) + ';' + str(end_time) + ";" + str(format_search)+'\n')
 
 # display history of statistics saved in the file 'N-Puzzle_statistics'
 def ft_display_history():
     try:
-        print "\x1b[91m" + "\nList of History" + "\x1b[0m"
+        print "\x1b[91m" + "\nHistory" + "\x1b[0m"
         with open('N-Puzzle_statistics') as f:
             content = f.readlines()
         content = [x.strip() for x in content]
 
-        for i in range(0, 30):
+        for i in range(0, 42):
             print '-',
         print ""
 
         for k, elem in enumerate(content):
             line = content[k].split(';')
+            print(line[len(line) - 1])
             size = ft_atoi(line[0])
             goal = list(filter(None, re.split(r',| |\[|\]', line[1])))
             start = list(filter(None, re.split(r',| |\[|\]', line[2])))
             level = line[4]
-            end_time = round(float(line[5]), 3)
+            end_time = round(float(line[5]), 4)
 
             bcolors = Ft_colors()
             w = len(str(size * size))
@@ -183,18 +107,18 @@ if __name__ == "__main__":
         if size ** 2 != len(start):
             print("ERROR : Puzzle size")
             exit()
-   # size = int(size)
     # generate puzzle
-    start = generate_Puzzle(start, size)
+    p = Puzzle(0)
+    start = p.generate_Puzzle(start, size)
     # goals
     if args.s == 'zero_first':
-        goal = ft_zero_first(size)
+        goal = p.ft_zero_first(size)
     elif args.s == 'zero_last':
-        goal = ft_zero_last(size)
+        goal = p.ft_zero_last(size)
     else:
-        goal = ft_spiralPrint(size)
-    sol = ft_solvable(start, goal, size)
-    if sol == 1:
+        goal = p.ft_spiralPrint(size)
+    sol = p.ft_solvable(start, goal, size)
+    if sol :
         cur = Puzzle(size)
         start_time = time.time()
         print "Wait please..."
@@ -204,16 +128,18 @@ if __name__ == "__main__":
             nb_open, level = cur.ft_idastar(root, goal, size, args.f)
         else:
             if args.u:
-                nb_open, level = cur.ft_astar(size, start, goal, args.f, -1) (uniform)
+                if args.g:
+                    print "NB: this will only do the Uniform-cost search" 
+                nb_open, level = cur.ft_astar(size, start, goal, args.f, -1) #(uniform)
             elif args.g:
-                nb_open, level = cur.ft_astar(size, start, goal, args.f, 0) (gradi)
+                nb_open, level = cur.ft_astar(size, start, goal, args.f, 0) #(gradi)
             else:
                 nb_open, level = cur.ft_astar(size, start, goal, args.f, 2) 
         end_time = time.time() - start_time
-        ft_clear()
-        ft_save_history(start, goal, size, level, end_time)
+   #     ft_clear()
+        ft_save_history(start, goal, size, level, end_time, args)
         cur.ft_display(nb_open, level, args, goal, start, end_time)
-        if args.v:
-            ft_display_history()
     else:
         print "\x1b[91m" + "This puzzle is unsolvable" + "\x1b[0m"
+    if args.v:
+            ft_display_history()

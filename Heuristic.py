@@ -58,8 +58,8 @@ class Heuristic:
             x_n, y_n = key % self.size, key / self.size
             x_g, y_g = key_g % self.size, key_g / self.size
             if y_g == y_n and x_n != x_g:
-                limit_g = (key / size) * size
-                limit_n = size * (key / size + 1)
+                limit_g = (key / self.size) * self.size
+                limit_n = self.size * (key / self.size + 1)
                 index_1 = key_g - 1
                 while index_1 >= limit_g:
                     index_2 = key + 1
