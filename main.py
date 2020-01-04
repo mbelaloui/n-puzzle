@@ -108,16 +108,16 @@ if __name__ == "__main__":
             print("ERROR : Puzzle size")
             exit()
     # generate puzzle
-    p = Puzzle(0)
-    start = p.generate_Puzzle(start, size)
+    temp = Puzzle(0)
+    start = temp.generate_Puzzle(start, size)
     # goals
     if args.s == 'zero_first':
-        goal = p.ft_zero_first(size)
+        goal = temp.ft_zero_first(size)
     elif args.s == 'zero_last':
-        goal = p.ft_zero_last(size)
+        goal = temp.ft_zero_last(size)
     else:
-        goal = p.ft_spiralPrint(size)
-    sol = p.ft_solvable(start, goal, size)
+        goal = temp.ft_spiralPrint(size)
+    sol = temp.ft_solvable(start, goal, size)
     if sol :
         cur = Puzzle(size)
         start_time = time.time()
@@ -130,9 +130,9 @@ if __name__ == "__main__":
             if args.u:
                 if args.g:
                     print "NB: this will only do the Uniform-cost search" 
-                nb_open, level = cur.ft_astar(size, start, goal, args.f, -1) #(uniform)
+                nb_open, level = cur.ft_astar(size, start, goal, args.f, -1)
             elif args.g:
-                nb_open, level = cur.ft_astar(size, start, goal, args.f, 0) #(gradi)
+                nb_open, level = cur.ft_astar(size, start, goal, args.f, 0)
             else:
                 nb_open, level = cur.ft_astar(size, start, goal, args.f, 2) 
         end_time = time.time() - start_time
