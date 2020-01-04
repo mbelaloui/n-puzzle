@@ -1,9 +1,10 @@
-# usage: main.py [-h] [-d]
-#               [-f {hamming,manhattan,conflicts,Euclidean_distance,out_of_row_and_column}]
-#               [-g] [-u] [-s {zero_first,zero_last,snail}] [-v] [-ida]
-#               input
-
 #N-puzzle help
+
+usage: main.py [-h] [-d]
+               [-f {hamming,manhattan,conflicts,Euclidean_distance,out_of_row_and_column}]
+               [-g] [-u] [-s {zero_first,zero_last,snail}] [-v] [-ida]
+               input
+
 
 positional arguments:
   input                 input start
