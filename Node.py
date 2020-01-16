@@ -48,3 +48,11 @@ class Node:
             temp_puz[x2 + y2 * size] = 0
             return temp_puz
         return None
+    
+    def __str__(self):
+        ret = str(self.id)+ " hash[ " 
+        ret = ret + str(self.lst_hash)+ "] elem [" 
+        for i in self.lst:
+            ret = ret + str(i)+ " "
+        ret = ret + "] f = "+ str(self.f) 
+        return ret

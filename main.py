@@ -71,12 +71,84 @@ def ft_display_history():
 
 # clear the terminal every time we display final results 
 def ft_clear():
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
-    # for mac and linux(here, os.name is 'posix')
+    system('clear')
+
+def get_size(size_puzzle) :
+    """
+        check if the size is well formated
+        check if the size is a numeric
+    """
+    size_puzzle_l = list(filter(None, re.split(r'\n| ', size_puzzle)))
+    if len(size_puzzle_l) == 1 :
+        ret = int(filter(str.isdigit, size_puzzle_l[0]))
+        if  (str(ret) == size_puzzle_l[0]) :
+            return int(ret)
+        else :
+            print("Error ize Puzzle is no numeric [{}]".format(size_puzzle_l[0]))
+            exit()
+    else :
+        print("Error : should have only the size heare")
+        exit()
+
+def check_int(val):
+    if (val.isalpha()):
+        print("Error : Element should not be here [{}]".format(val))
+        exit()
+    ret = int(filter(str.isdigit, val))
+    if (str(ret) == val) :
+        return (ret)
+    else :
+        print("Error : parsing puzzel [{}], Ciao".format(val))
+        exit()
+
+def get_puzzel(size, puz) :
+    """
+        check the number of elements in each line
+        check element is bigger than the size^2
+        check duplicate elements
+    """
+    if (len(puz)!= size) :
+        print("Error : Size given and the size of the puzzle doesn't concorde\nThe puzzle is not well formatted.. ciao")
+        exit()
+    else :
+        lst_ret = []
+        for i in puz:
+            line = list(filter(None, re.split(r'\n| ', i)))
+            if (len (line) == size) :
+                for j in line :
+                    temp_val = check_int(j)
+                    if (temp_val < size ** 2):
+                        if (temp_val not in lst_ret) :
+                            lst_ret.append(temp_val)
+                        else :
+                            print("Error : Duplicate element in the puzzle [{}]".format(temp_val))
+                            exit()
+                    else :
+                        print("Error : Element in the puzzle is too large [{}] size^2 [{}]".format(temp_val, size**2))
+                        exit()
+            else :
+                print("Error: Puzzle not well formatted [{}] should be {} elements, ciao ".format(line, size))
+                exit()
+    return (lst_ret)
+
+def parse_puzzel(args):
+    """
+    get size
+    get puzzle
+    """
+    if len(args.input):
+        start = list(filter(None, re.split(r'# This puzzle is solvable|# This puzzle is unsolvable|\n', args.input)))
+        if (start):
+            size = get_size(start[0])
+            puz =start[1:]
+            return (size, get_puzzel(size, puz))
+        else :
+            print("Error : Should start withe the size of the puzzle \n[{}]\n\nCiao...".format(args.input))
+            exit()        
     else:
-        _ = system('clear')
+        print("Error empty Input ciao")
+        exit()
+
 
 # Main Function
 if __name__ == "__main__":
@@ -92,24 +164,15 @@ if __name__ == "__main__":
     parser.add_argument("-v", default=False, action='store_true', help="Display per-puzzle statistics")
     parser.add_argument("-ida", default=False, action='store_true', help="IdA-Star search or A-Star")
     parser.add_argument("input", help="input start")
-
     parser.parse_args()
     args = parser.parse_args()
-      
-    # start list
-    start = list(filter(None, re.split(r'# This puzzle is solvable|# This puzzle is unsolvable|\n|,| |', args.input)))
-    
-    # size
-    size = len(start) ** 0.5
-    if int(size) != size:
-        size = ft_atoi(start[0])
-        start = start[1:]
-        if size ** 2 != len(start):
-            print("ERROR : Puzzle size")
-            exit()
-    # generate puzzle
+    try:
+        f = open(args.input, "r")
+        args.input = f.read()
+    except Exception:
+        print("NB : This is not a file")
+    size, start = parse_puzzel(args)
     temp = Puzzle(0)
-    start = temp.generate_Puzzle(start, size)
     # goals
     if args.s == 'zero_first':
         goal = temp.ft_zero_first(size)

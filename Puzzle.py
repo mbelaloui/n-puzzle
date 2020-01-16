@@ -107,7 +107,7 @@ class Puzzle:
         else:
             for i in graph:
                 print i.lst
-    
+
     # A* Algorithm
     def ft_astar(self, size, start, goal, heuristic, cost):
         nb_open = 0
@@ -122,7 +122,6 @@ class Puzzle:
         while True:
             cur = heapq.heappop(self.open)
             del self.tmp_opened[cur.lst_hash]
-
             if cur.lst == goal:
                 self.closed.insert(0, cur)
                 return nb_open, cur.level
@@ -234,15 +233,15 @@ class Puzzle:
         goal = [i for i in range(0, size ** 2)]
         return goal
 
-    # generate a puzzle from a str 
-    def generate_Puzzle(self, lst_str, size):
-        i = 0
-        lst = []
-        size = size ** 2
-        while i < size:
-            lst.append(ft_atoi(lst_str[i]))
-            i += 1
-        return lst
+    # # generate a puzzle from a str 
+    # def generate_Puzzle(self, lst_str, size):
+    #     i = 0
+    #     lst = []
+    #     size = size ** 2
+    #     while i < size:
+    #         lst.append(ft_atoi(lst_str[i]))
+    #         i += 1
+    #     return lst
 
     # determine if the puzzle is solvent or not before applying algorithm
     def ft_solvable(self, start, goal, size):
